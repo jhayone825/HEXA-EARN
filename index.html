@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON-EARN | BY JHAYONE</title>
+    <title>HEXA-EARN | BY JHAYONE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
@@ -36,7 +36,6 @@
         .auth-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; width: 100%; color: white; outline: none; margin-bottom: 15px; transition: 0.3s; }
         .auth-input:focus { border-color: var(--accent); background: rgba(0, 243, 255, 0.05); }
 
-        /* CHAT BOX FIX */
         #chatWidget { position: fixed; bottom: 30px; right: 30px; width: 320px; z-index: 8000; }
         .chat-body { height: 400px; display: none; flex-direction: column; }
         .chat-body.active { display: flex; }
@@ -49,7 +48,7 @@
 
     <nav class="fixed top-0 w-full z-[9000] bg-black/90 backdrop-blur-md border-b border-white/5 h-20 flex items-center px-10 justify-between">
         <div class="flex items-center gap-12">
-            <h1 class="text-2xl font-sync font-bold tracking-tighter cursor-pointer" onclick="navigate('home')">NEON<span class="text-cyan-400">EARN</span></h1>
+            <h1 class="text-2xl font-sync font-bold tracking-tighter cursor-pointer" onclick="navigate('home')">HEXA<span class="text-cyan-400">EARN</span></h1>
             <div class="hidden lg:flex gap-10 text-[10px] font-sync text-gray-400 uppercase tracking-[0.2em]">
                 <button onclick="navigate('home')" class="hover:text-cyan-400 transition">Home</button>
                 <button onclick="navigate('explore')" class="hover:text-cyan-400 transition">The Grid</button>
@@ -98,6 +97,41 @@
                 <div class="flex justify-center gap-6">
                     <button onclick="navigate('explore')" class="btn-neon px-12">Enter Terminal</button>
                     <button onclick="navigate('login')" class="border border-white/20 hover:border-cyan-400 px-12 py-3 rounded-xl font-sync text-[10px] uppercase transition">Login Access</button>
+                </div>
+            </div>
+
+            <div class="px-10 py-32 max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 border-b border-white/5">
+                <div>
+                    <p class="text-cyan-400 font-sync text-[10px] tracking-[0.4em] mb-4 uppercase">Protocol Mission</p>
+                    <h2 class="text-5xl font-extrabold italic uppercase mb-8">What is <span class="text-cyan-400">Hexa-Earn?</span></h2>
+                    <p class="text-gray-400 leading-relaxed mb-6">Hexa-Earn is a decentralized Architecture Protocol where users (Architects) secure nodes and optimize digital asset flow. Unlike traditional platforms, we utilize AI-driven processing to validate transactions on the Jhayone Network.</p>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-white mb-2 uppercase italic text-sm">Real Assets</h4>
+                            <p class="text-gray-500 text-xs">Every Strike # on the grid represents a localized data-packet worth real ETH value.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white mb-2 uppercase italic text-sm">Secure Entry</h4>
+                            <p class="text-gray-500 text-xs">Architects must be verified via our Neural Link to prevent bot manipulation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel p-10 bg-cyan-400/5">
+                    <h4 class="text-xs font-sync text-cyan-400 mb-8 uppercase tracking-widest">Revenue Model v8.6</h4>
+                    <ul class="space-y-6 text-sm font-mono">
+                        <li class="flex justify-between border-b border-white/5 pb-4">
+                            <span class="text-gray-400">Protocol Fees:</span>
+                            <span>2.5% per Yield</span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/5 pb-4">
+                            <span class="text-gray-400">Node Maintenance:</span>
+                            <span>AI Optimized</span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/5 pb-4">
+                            <span class="text-gray-400">Business Registry:</span>
+                            <span class="text-cyan-400">JH-9982-INTL</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             
@@ -173,6 +207,7 @@
                 <div>
                     <p class="text-cyan-400 font-sync text-[9px] mb-1 uppercase tracking-widest">Master Architect</p>
                     <h3 class="text-3xl font-sync font-bold uppercase">Jhayone</h3>
+                    <p class="text-[8px] font-mono text-gray-500 mt-2 uppercase tracking-tighter">Verified Node Authority // REG NO. JH-9982-INTL</p>
                 </div>
             </div>
             <div class="text-right">
@@ -194,7 +229,6 @@
             }); 
         }
 
-        // NEURAL AUDIO SYSTEM
         const neuralAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
         neuralAudio.volume = 0.3;
 
@@ -241,17 +275,14 @@
             document.getElementById('chatIcon').innerText = document.getElementById('chatBody').classList.contains('active') ? '▼' : '▲';
         }
 
-        // CHAT LOGIC
         function sendMessage() {
             const input = document.getElementById('chatMsg');
             const lines = document.getElementById('chatLines');
             if(input.value.trim() === "") return;
-            
             lines.innerHTML += `<div><span class="text-gray-500">[YOU]</span> ${input.value}</div>`;
             input.value = "";
             lines.scrollTop = lines.scrollHeight;
             playNeuralPing();
-
             setTimeout(() => {
                 lines.innerHTML += `<div><span class="text-cyan-400">[SYSTEM]</span> Broadcast successful.</div>`;
                 lines.scrollTop = lines.scrollHeight;
@@ -259,7 +290,6 @@
             }, 1000);
         }
 
-        // AUTO CHAT WINS
         setInterval(() => {
             const lines = document.getElementById('chatLines');
             if(document.getElementById('chatBody').classList.contains('active')) {
