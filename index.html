@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON-EARN | BY JHAYONE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --accent: #00f3ff; --bg: #020205; --card: #0a0a0f; }
+        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .font-sync { font-family: 'Syncopate', sans-serif; }
+        
+        .page-view { display: none; min-height: 100vh; }
+        .page-view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* NEURAL STREAM TICKER */
+        .neural-stream { background: rgba(0, 243, 255, 0.03); border-y: 1px solid rgba(255,255,255,0.05); height: 35px; display: flex; align-items: center; overflow: hidden; }
+        .stream-wrap { white-space: nowrap; animation: stream 40s linear infinite; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); }
+        @keyframes stream { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+        /* GLASS INTERFACE */
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 2.5rem; }
+        
+        /* THE GRID SYSTEM */
+        .hero-bg { background: linear-gradient(rgba(2,2,5,0.85), rgba(2,2,5,1)), url('https://i.ibb.co/qMsfcZz7/IMG-5012.jpg'); background-size: cover; background-position: center; }
+        .game-img-wrapper { height: 280px; overflow: hidden; border-radius: 2rem; background: #000; position: relative; }
+        .game-img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        .game-card:hover .game-img { transform: scale(1.15) rotate(1deg); filter: brightness(1.2); }
+        
+        .btn-neon { background: var(--accent); color: #000; font-weight: 800; padding: 12px 28px; border-radius: 14px; font-size: 12px; cursor: pointer; border: none; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-neon:hover { box-shadow: 0 0 25px rgba(0, 243, 255, 0.4); transform: translateY(-3px); }
+
+        .auth-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; width: 100%; color: white; outline: none; margin-bottom: 15px; transition: 0.3s; }
+        .auth-input:focus { border-color: var(--accent); background: rgba(0, 243, 255, 0.05); }
+
+        /* CHAT BOX FIX */
+        #chatWidget { position: fixed; bottom: 30px; right: 30px; width: 320px; z-index: 8000; }
+        .chat-body { height: 400px; display: none; flex-direction: column; }
+        .chat-body.active { display: flex; }
+        #chatLines { scroll-behavior: smooth; }
+        .chat-input-bar { background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 10px; display: flex; gap: 8px; }
+        .chat-msg-input { background: transparent; border: none; font-size: 10px; color: white; outline: none; flex: 1; font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    <nav class="fixed top-0 w-full z-[9000] bg-black/90 backdrop-blur-md border-b border-white/5 h-20 flex items-center px-10 justify-between">
+        <div class="flex items-center gap-12">
+            <h1 class="text-2xl font-sync font-bold tracking-tighter cursor-pointer" onclick="navigate('home')">NEON<span class="text-cyan-400">EARN</span></h1>
+            <div class="hidden lg:flex gap-10 text-[10px] font-sync text-gray-400 uppercase tracking-[0.2em]">
+                <button onclick="navigate('home')" class="hover:text-cyan-400 transition">Home</button>
+                <button onclick="navigate('explore')" class="hover:text-cyan-400 transition">The Grid</button>
+                <button onclick="navigate('rankings')" class="hover:text-cyan-400 transition">Leaderboard</button>
+                <button onclick="navigate('profile')" class="hover:text-cyan-400 transition">Architect</button>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <button class="text-[10px] font-sync text-cyan-400 hover:text-white transition" onclick="navigate('login')">LOGIN</button>
+            <button class="btn-neon" onclick="toggleWallet()">CONNECT</button>
+        </div>
+    </nav>
+
+    <main class="pt-20">
+        <div class="neural-stream">
+            <div class="stream-wrap uppercase">
+                &bull; [NODE-01] 0xCyber... won 0.45 ETH &bull; [NODE-44] Jhayone_Fan earned +1200 XP &bull; [NODE-92] Void_Walker accessed Strike #119 &bull; [SYSTEM] New block detected on the Jhayone protocol &bull; 
+            </div>
+        </div>
+
+        <section id="login" class="page-view px-10 py-32 max-w-lg mx-auto">
+            <div class="glass-panel p-12 text-center">
+                <h2 class="text-4xl font-sync font-bold mb-10 italic text-cyan-400">LOGIN</h2>
+                <input type="text" placeholder="ARCHITECT ID" class="auth-input">
+                <input type="password" placeholder="SECURITY KEY" class="auth-input">
+                <button class="btn-neon w-full py-5 mt-4" onclick="navigate('home')">ENTER NODE</button>
+                <p class="mt-6 text-[10px] text-gray-500 uppercase tracking-widest">No access? <span class="text-cyan-400 cursor-pointer" onclick="navigate('signup')">Register</span></p>
+            </div>
+        </section>
+
+        <section id="signup" class="page-view px-10 py-32 max-w-lg mx-auto">
+            <div class="glass-panel p-12 text-center">
+                <h2 class="text-4xl font-sync font-bold mb-10 italic">SIGNUP</h2>
+                <input type="text" placeholder="DISPLAY NAME" class="auth-input">
+                <input type="email" placeholder="NEURAL MAIL" class="auth-input">
+                <input type="password" placeholder="SECURITY KEY" class="auth-input">
+                <button class="btn-neon w-full py-5 mt-4" onclick="navigate('home')">CREATE IDENTITY</button>
+                <p class="mt-6 text-[10px] text-gray-500 uppercase tracking-widest">Have ID? <span class="text-cyan-400 cursor-pointer" onclick="navigate('login')">Login</span></p>
+            </div>
+        </section>
+
+        <section id="home" class="page-view active">
+            <div class="hero-bg py-48 px-10 text-center">
+                <h2 class="text-8xl font-extrabold italic uppercase tracking-tighter mb-4">Master The <span class="text-cyan-400">Grid.</span></h2>
+                <p class="text-gray-400 font-sync text-[10px] tracking-[0.5em] mb-12 uppercase">Digital Architecture by Jhayone</p>
+                <div class="flex justify-center gap-6">
+                    <button onclick="navigate('explore')" class="btn-neon px-12">Enter Terminal</button>
+                    <button onclick="navigate('login')" class="border border-white/20 hover:border-cyan-400 px-12 py-3 rounded-xl font-sync text-[10px] uppercase transition">Login Access</button>
+                </div>
+            </div>
+            
+            <div class="px-10 py-24 max-w-[1600px] mx-auto">
+                <div class="flex justify-between items-end mb-16">
+                    <div>
+                        <p class="text-cyan-400 font-sync text-[9px] tracking-[0.3em] mb-2 uppercase">Neural Selection</p>
+                        <h3 class="text-4xl font-bold uppercase italic">Active Terminals</h3>
+                    </div>
+                    <button onclick="navigate('explore')" class="text-xs font-bold border-b border-cyan-400 pb-1">VIEW ALL ASSETS</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10" id="homeGrid"></div>
+            </div>
+        </section>
+
+        <section id="explore" class="page-view px-10 py-24 max-w-[1600px] mx-auto">
+            <h2 class="text-6xl font-extrabold mb-20 uppercase italic tracking-tighter text-center">The <span class="text-cyan-400">Architecture</span> Grid</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" id="exploreGrid"></div>
+        </section>
+
+        <section id="rankings" class="page-view px-10 py-24 max-w-5xl mx-auto">
+            <h2 class="text-5xl font-extrabold mb-12 uppercase italic">Leaderboard</h2>
+            <div class="glass-panel p-8">
+                <table class="w-full text-left" id="lbTable">
+                    <tr class="text-[10px] text-gray-500 font-sync border-b border-white/5"><th class="pb-4">NODE</th><th class="pb-4">ARCHITECT</th><th class="pb-4">YIELD</th></tr>
+                    <tr class="border-b border-white/5"><td class="py-6 font-mono text-cyan-400">#01</td><td class="font-bold">CYBER_PNK</td><td class="font-mono">45.20 ETH</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <section id="profile" class="page-view px-10 py-24 max-w-5xl mx-auto text-center">
+            <div class="glass-panel p-16">
+                <img src="https://i.ibb.co/KPNmxD3/IMG-5015.jpg" class="w-40 h-40 rounded-full mx-auto mb-8 border-2 border-cyan-400 p-2">
+                <h3 class="text-4xl font-bold uppercase italic mb-2">Cyber_Architect</h3>
+                <p class="text-cyan-400 font-mono text-sm tracking-widest uppercase">Level 88 Security Clearance</p>
+            </div>
+        </section>
+
+        <section id="detail" class="page-view px-10 py-24 max-w-7xl mx-auto">
+            <button onclick="navigate('explore')" class="text-cyan-400 font-bold mb-12 uppercase tracking-widest text-xs">← Return to grid</button>
+            <div id="detailView"></div>
+        </section>
+    </main>
+
+    <div id="chatWidget" class="glass-panel overflow-hidden">
+        <div class="p-5 flex justify-between bg-cyan-400/10 cursor-pointer" onclick="toggleChat()">
+            <span class="text-[10px] font-sync font-bold tracking-widest">NEURAL LINK</span>
+            <span id="chatIcon">▲</span>
+        </div>
+        <div id="chatBody" class="chat-body">
+            <div class="flex-1 overflow-y-auto font-mono text-[10px] space-y-3 p-5" id="chatLines">
+                <div><span class="text-cyan-400">[SYSTEM]</span> Welcome to the Jhayone Network.</div>
+            </div>
+            <div class="chat-input-bar">
+                <input type="text" id="chatMsg" class="chat-msg-input" placeholder="Enter message..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="text-cyan-400 text-[10px] font-bold" onclick="sendMessage()">SEND</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="walletModal" class="hidden fixed inset-0 bg-black/90 z-[10000] items-center justify-center backdrop-blur-md">
+        <div class="glass-panel p-12 w-full max-w-md text-center">
+            <h2 class="text-2xl font-sync font-bold mb-10 italic">SYNC VAULT</h2>
+            <button class="w-full bg-white/5 p-5 rounded-2xl mb-4 border border-white/5 hover:border-cyan-400 transition" onclick="toggleWallet()">METAMASK</button>
+            <button class="w-full bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-cyan-400 transition" onclick="toggleWallet()">PHANTOM</button>
+        </div>
+    </div>
+
+    <footer class="mt-40 border-t border-white/5 py-24 px-10">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+            <div class="flex items-center gap-8">
+                <img src="https://i.ibb.co/XfNVcCn2/IMG-5013.jpg" class="w-20 h-20 rounded-3xl grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
+                <div>
+                    <p class="text-cyan-400 font-sync text-[9px] mb-1 uppercase tracking-widest">Master Architect</p>
+                    <h3 class="text-3xl font-sync font-bold uppercase">Jhayone</h3>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 font-mono uppercase">Version 8.6 // Neural Audio Link</p>
+                <p class="text-[10px] text-gray-700 font-sync mt-2 uppercase tracking-tighter">© 2026 Jhayone Digital Architects.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const jhayoneGallery = ["https://i.ibb.co/5hqkHp9X/IMG-5020.jpg", "https://i.ibb.co/07mzk6v/IMG-5021.jpg", "https://i.ibb.co/Vc4XJvMg/IMG-5022.jpg", "https://i.ibb.co/DgKQ7tzv/IMG-5023.jpg", "https://i.ibb.co/0VhrJnt9/IMG-5024.jpg", "https://i.ibb.co/DydbFvD/IMG-5025.jpg", "https://i.ibb.co/My8JMBmc/IMG-5018.jpg", "https://i.ibb.co/gF4gy5qn/IMG-5019.jpg", "https://i.ibb.co/FL10GnpG/IMG-5026.jpg", "https://i.ibb.co/RXzncNb/IMG-5027.jpg", "https://i.ibb.co/vvXtWKJ1/IMG-5028.jpg", "https://i.ibb.co/C37SmRsc/IMG-5029.jpg", "https://i.ibb.co/wh6Zy3dp/IMG-5030.jpg", "https://i.ibb.co/sdfNwYss/IMG-5031.jpg", "https://i.ibb.co/Xk4wSyhm/IMG-5032.jpg", "https://i.ibb.co/Lztg2FGD/IMG-5033.jpg", "https://i.ibb.co/xSSYD7z5/IMG-5034.jpg", "https://i.ibb.co/sJczSTpL/IMG-5036.jpg", "https://i.ibb.co/tM1c62Tk/IMG-5037.jpg"];
+        const projects = [];
+        for(let i=1; i<=120; i++) { 
+            projects.push({ 
+                id: i, 
+                title: "Grid Strike #" + (100+i), 
+                img: jhayoneGallery[Math.floor(Math.random()*jhayoneGallery.length)], 
+                val: (Math.random() * 8.5).toFixed(2) + " ETH" 
+            }); 
+        }
+
+        // NEURAL AUDIO SYSTEM
+        const neuralAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+        neuralAudio.volume = 0.3;
+
+        function playNeuralPing() {
+            neuralAudio.currentTime = 0;
+            neuralAudio.play().catch(e => console.log("Audio needs interaction first."));
+        }
+
+        function loadGrids() {
+            const hG = document.getElementById('homeGrid'); 
+            const eG = document.getElementById('exploreGrid');
+            hG.innerHTML = ''; eG.innerHTML = '';
+            projects.forEach((item, index) => {
+                const card = `
+                    <div class="game-card cursor-pointer group" onclick="openProject(${item.id})">
+                        <div class="game-img-wrapper mb-8 glass-panel border-white/10 group-hover:border-cyan-400/30 transition-all duration-500">
+                            <img src="${item.img}" class="game-img">
+                        </div>
+                        <h4 class="font-bold text-xl mb-3 uppercase italic tracking-tight group-hover:text-cyan-400 transition-colors">${item.title}</h4>
+                        <div class="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                            <span class="bg-white/5 px-3 py-1 rounded-full border border-white/5">${item.val}</span>
+                            <span class="text-cyan-400 font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">Connect →</span>
+                        </div>
+                    </div>`;
+                if(index < 8) hG.innerHTML += card;
+                eG.innerHTML += card;
+            });
+        }
+
+        function navigate(id) { 
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+            window.scrollTo(0,0); 
+        }
+
+        function toggleWallet() { 
+            const m = document.getElementById('walletModal'); 
+            m.classList.toggle('hidden');
+            m.style.display = m.classList.contains('hidden') ? 'none' : 'flex';
+        }
+
+        function toggleChat() { 
+            document.getElementById('chatBody').classList.toggle('active'); 
+            document.getElementById('chatIcon').innerText = document.getElementById('chatBody').classList.contains('active') ? '▼' : '▲';
+        }
+
+        // CHAT LOGIC
+        function sendMessage() {
+            const input = document.getElementById('chatMsg');
+            const lines = document.getElementById('chatLines');
+            if(input.value.trim() === "") return;
+            
+            lines.innerHTML += `<div><span class="text-gray-500">[YOU]</span> ${input.value}</div>`;
+            input.value = "";
+            lines.scrollTop = lines.scrollHeight;
+            playNeuralPing();
+
+            setTimeout(() => {
+                lines.innerHTML += `<div><span class="text-cyan-400">[SYSTEM]</span> Broadcast successful.</div>`;
+                lines.scrollTop = lines.scrollHeight;
+                playNeuralPing();
+            }, 1000);
+        }
+
+        // AUTO CHAT WINS
+        setInterval(() => {
+            const lines = document.getElementById('chatLines');
+            if(document.getElementById('chatBody').classList.contains('active')) {
+                const names = ["Void_X", "Neon_User", "Cyber_King", "Ghost_88", "Jhayone_Node"];
+                const name = names[Math.floor(Math.random()*names.length)];
+                const eth = (Math.random() * 0.5).toFixed(2);
+                lines.innerHTML += `<div><span class="text-cyan-400 font-bold">[WIN]</span> ${name} just earned ${eth} ETH!</div>`;
+                lines.scrollTop = lines.scrollHeight;
+                playNeuralPing();
+            }
+        }, 10000);
+
+        function openProject(id) {
+            const g = projects.find(p => p.id === id);
+            document.getElementById('detailView').innerHTML = `
+                <div class="grid lg:grid-cols-2 gap-20">
+                    <div class="game-img-wrapper h-[650px] shadow-2xl shadow-cyan-500/10">
+                        <img src="${g.img}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <p class="text-cyan-400 font-sync text-[10px] tracking-[0.4em] mb-4 uppercase">Protocol Active</p>
+                        <h2 class="text-7xl font-extrabold mb-10 italic uppercase tracking-tighter leading-none">${g.title}</h2>
+                        <div class="p-10 glass-panel mb-12">
+                            <span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Est. Network Yield</span>
+                            <div class="text-6xl font-bold text-cyan-400 mt-4">${g.val}</div>
+                        </div>
+                        <button class="btn-neon w-full py-8 text-xl font-sync">Initialize Terminal</button>
+                    </div>
+                </div>`;
+            navigate('detail');
+        }
+
+        window.onload = () => { loadGrids(); };
+    </script>
+</body>
+</html>
