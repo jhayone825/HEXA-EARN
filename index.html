@@ -123,6 +123,29 @@
                     <button class="border border-white/10 hover:border-cyan-400 px-10 py-4 rounded-xl font-sync text-[9px] uppercase transition">Protocol</button>
                 </div>
             </div>
+
+            <div class="max-w-4xl mx-auto px-6 mb-32">
+                <div class="glass-panel p-10 border-cyan-400/30">
+                    <h3 class="text-cyan-400 font-sync text-xs tracking-[0.5em] uppercase mb-8">Protocol Mission</h3>
+                    <div class="grid md:grid-cols-2 gap-12 text-left">
+                        <div>
+                            <h4 class="font-bold text-xl mb-4 italic uppercase">What is HEXA-EARN?</h4>
+                            <p class="text-gray-400 text-xs leading-relaxed">Hexa-Earn is a decentralized Architecture Protocol where users (Architects) secure nodes and optimize digital asset flow. Unlike traditional platforms, we utilize AI-driven processing to validate transactions on the Jhayone Network.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2 uppercase text-cyan-400">Real Assets</h4>
+                                <p class="text-gray-400 text-xs">Every Strike # on the grid represents a localized data-packet worth real ETH value.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2 uppercase text-cyan-400">Secure Entry</h4>
+                                <p class="text-gray-400 text-xs">Architects must be verified via our Neural Link to prevent bot manipulation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="px-6 py-24 max-w-[1400px] mx-auto">
                 <div class="flex justify-between items-end mb-12">
                     <h3 class="text-3xl font-bold uppercase italic tracking-tighter">Live <span class="text-cyan-400">Terminals</span></h3>
@@ -248,7 +271,7 @@
             clickSound.play();
             addLog(`<span class="text-white">[YOU]</span> ${input.value}`);
             input.value="";
-            setTimeout(()=>addLog("[SYSTEM] Command acknowledged."),8000);
+            setTimeout(()=>addLog("[SYSTEM] Command acknowledged."), 8000);
         }
 
         function addLog(msg){
