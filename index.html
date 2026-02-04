@@ -3,326 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HEXA-EARN | BY JHAYONE</title>
+    <title>HEXA-EARN | Professional Yield Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@300;400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root { --accent: #00f3ff; --bg: #020205; --card: #0a0a0f; }
-        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+
         .font-sync { font-family: 'Syncopate', sans-serif; }
-        
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        .fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s ease forwards; }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
         .page-view { display: none; min-height: 100vh; }
-        .page-view.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page-view.active { display: block; }
 
-        /* NEURAL STREAM TICKER */
-        .neural-stream { background: rgba(0, 243, 255, 0.03); border-y: 1px solid rgba(255,255,255,0.05); height: 35px; display: flex; align-items: center; overflow: hidden; }
-        .stream-wrap { white-space: nowrap; animation: stream 40s linear infinite; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); }
-        @keyframes stream { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        .hero-grid-bg {
+            background-image: linear-gradient(to right, rgba(0,243,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,243,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            animation: moveGrid 20s linear infinite;
+        }
+        @keyframes moveGrid { from { background-position: 0 0; } to { background-position: 40px 40px; } }
 
-        /* GLASS INTERFACE */
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 2.5rem; }
-        
-        /* THE GRID SYSTEM */
-        .hero-bg { background: linear-gradient(rgba(2,2,5,0.85), rgba(2,2,5,1)), url('https://i.ibb.co/qMsfcZz7/IMG-5012.jpg'); background-size: cover; background-position: center; }
-        .game-img-wrapper { height: 280px; overflow: hidden; border-radius: 2rem; background: #000; position: relative; }
-        .game-img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
-        .game-card:hover .game-img { transform: scale(1.15) rotate(1deg); filter: brightness(1.2); }
-        
-        .btn-neon { background: var(--accent); color: #000; font-weight: 800; padding: 12px 28px; border-radius: 14px; font-size: 12px; cursor: pointer; border: none; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-neon:hover { box-shadow: 0 0 25px rgba(0, 243, 255, 0.4); transform: translateY(-3px); }
+        .hexa-logo { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), #005f63); clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); display: inline-block; box-shadow: 0 0 15px var(--accent); }
 
-        .auth-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; width: 100%; color: white; outline: none; margin-bottom: 15px; transition: 0.3s; }
-        .auth-input:focus { border-color: var(--accent); background: rgba(0, 243, 255, 0.05); }
+        .btn-neon { background: var(--accent); color: #000; font-weight: 800; padding: 12px 24px; border-radius: 10px; font-size: 10px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-neon:hover { box-shadow: 0 0 20px rgba(0, 243, 255, 0.5); transform: translateY(-2px); }
 
-        #chatWidget { position: fixed; bottom: 30px; right: 30px; width: 320px; z-index: 8000; }
-        .chat-body { height: 400px; display: none; flex-direction: column; }
-        .chat-body.active { display: flex; }
-        #chatLines { scroll-behavior: smooth; }
-        .chat-input-bar { background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 10px; display: flex; gap: 8px; }
-        .chat-msg-input { background: transparent; border: none; font-size: 10px; color: white; outline: none; flex: 1; font-family: 'JetBrains Mono', monospace; }
+        .node-img { transition: 0.7s ease; filter: grayscale(80%) brightness(0.7); }
+        .game-card:hover .node-img { filter: grayscale(0%) brightness(1.1); transform: scale(1.08); }
+
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; }
+
+        #chatWidget { z-index: 8000; transition: 0.5s ease; }
+        .chat-input-container { background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); padding: 10px; display: flex; gap: 8px; align-items: center; }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,243,255,0.1);
+            border: 1px solid rgba(0,243,255,0.3);
+            backdrop-filter: blur(10px);
+            color: #00f3ff;
+            font-size: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            z-index: 999;
+        }
+
+        #loginModal {
+            position: fixed; inset:0; display:flex; justify-content:center; align-items:center;
+            background: rgba(0,0,0,0.85); z-index:10000;
+        }
+        #loginModal .modal-content {
+            background: #0a0a0f; padding:40px; border-radius:20px; text-align:center; width:300px;
+        }
+        #loginModal input {
+            width:100%; padding:10px; margin:10px 0; border-radius:10px; background:#020205; border:1px solid #00f3ff; color:white;
+        }
+        #loginModal button {
+            width:100%; padding:10px; margin-top:10px; border:none; border-radius:10px; background:#00f3ff; color:#000; cursor:pointer; font-weight:bold;
+        }
+
+        footer { text-align:center; padding:20px 0; font-size:10px; color:#00f3ff; border-top:1px solid rgba(0,243,255,0.2); margin-top:50px; }
     </style>
 </head>
 <body>
 
-    <nav class="fixed top-0 w-full z-[9000] bg-black/90 backdrop-blur-md border-b border-white/5 h-20 flex items-center px-10 justify-between">
-        <div class="flex items-center gap-12">
-            <h1 class="text-2xl font-sync font-bold tracking-tighter cursor-pointer" onclick="navigate('home')">HEXA<span class="text-cyan-400">EARN</span></h1>
-            <div class="hidden lg:flex gap-10 text-[10px] font-sync text-gray-400 uppercase tracking-[0.2em]">
-                <button onclick="navigate('home')" class="hover:text-cyan-400 transition">Home</button>
-                <button onclick="navigate('explore')" class="hover:text-cyan-400 transition">The Grid</button>
-                <button onclick="navigate('rankings')" class="hover:text-cyan-400 transition">Leaderboard</button>
-                <button onclick="navigate('profile')" class="hover:text-cyan-400 transition">Architect</button>
+    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="notifySound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+
+    <div id="loginModal">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Enter your username" />
+            <input type="password" id="password" placeholder="Enter password" />
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-[9000] bg-black/80 backdrop-blur-xl border-b border-white/5 h-20 flex items-center px-6 lg:px-12 justify-between">
+        <div class="flex items-center gap-10">
+            <div class="flex items-center cursor-pointer group" onclick="navigate('home')">
+                <div class="hexa-logo"></div>
+                <div>
+                    <h1 class="text-xl font-sync font-bold tracking-tighter">HEXA<span class="text-cyan-400">EARN</span></h1>
+                    <p class="text-[7px] font-sync text-cyan-400/60 tracking-widest uppercase">Professional Yield Dashboard</p>
+                </div>
             </div>
         </div>
         <div class="flex items-center gap-6">
-            <button class="text-[10px] font-sync text-cyan-400 hover:text-white transition" onclick="navigate('login')">LOGIN</button>
-            <button class="btn-neon" onclick="toggleWallet()">CONNECT</button>
+            <button id="walletBtn" class="btn-neon" onclick="simulateConnect()">CONNECT WALLET</button>
         </div>
     </nav>
 
     <main class="pt-20">
-        <div class="neural-stream">
-            <div class="stream-wrap uppercase">
-                &bull; [NODE-01] 0xCyber... won 0.45 ETH &bull; [NODE-44] Jhayone_Fan earned +1200 XP &bull; [NODE-92] Void_Walker accessed Strike #119 &bull; [SYSTEM] New block detected on the Jhayone protocol &bull; 
+        <div class="neural-stream bg-black/50 backdrop-blur-md h-[35px] flex items-center overflow-hidden border-b border-white/5">
+            <div class="stream-wrap font-mono uppercase text-[9px]">
+                &bull; <span class="text-cyan-400">[NODE-READY]</span> Awaiting handshake... &bull; [SYSTEM] Yield processing active &bull; [ETH/USD] <span id="ethPrice" class="text-cyan-400 font-bold">$2,642.12</span>
             </div>
         </div>
 
-        <section id="login" class="page-view px-10 py-32 max-w-lg mx-auto">
-            <div class="glass-panel p-12 text-center">
-                <h2 class="text-4xl font-sync font-bold mb-10 italic text-cyan-400">LOGIN</h2>
-                <input type="text" placeholder="ARCHITECT ID" class="auth-input">
-                <input type="password" placeholder="SECURITY KEY" class="auth-input">
-                <button class="btn-neon w-full py-5 mt-4" onclick="navigate('home')">ENTER NODE</button>
-                <p class="mt-6 text-[10px] text-gray-500 uppercase tracking-widest">No access? <span class="text-cyan-400 cursor-pointer" onclick="navigate('signup')">Register</span></p>
+        <section id="home" class="page-view active relative overflow-hidden">
+            <div class="absolute inset-0 hero-grid-bg -z-10"></div>
+            <div class="py-32 px-6 text-center">
+                <h2 class="fade-up text-6xl lg:text-8xl font-extrabold italic uppercase tracking-tighter mb-6">Master The <span class="text-cyan-400">Grid.</span></h2>
+                <p class="fade-up delay-1 text-gray-400 font-sync text-[10px] tracking-[0.4em] mb-12 uppercase">Automated crypto yield tracking for digital architects.</p>
+                <div class="fade-up delay-2 flex justify-center gap-4 mb-20">
+                    <button onclick="navigate('explore')" class="btn-neon px-10 py-4">Launch Dashboard</button>
+                    <button class="border border-white/10 hover:border-cyan-400 px-10 py-4 rounded-xl font-sync text-[9px] uppercase transition">Protocol</button>
+                </div>
+            </div>
+            <div class="px-6 py-24 max-w-[1400px] mx-auto">
+                <div class="flex justify-between items-end mb-12">
+                    <h3 class="text-3xl font-bold uppercase italic tracking-tighter">Live <span class="text-cyan-400">Terminals</span></h3>
+                    <button onclick="navigate('explore')" class="text-[10px] font-bold border-b border-cyan-400 pb-1 uppercase tracking-widest">VIEW ALL</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="homeGrid"></div>
             </div>
         </section>
 
-        <section id="signup" class="page-view px-10 py-32 max-w-lg mx-auto">
-            <div class="glass-panel p-12 text-center">
-                <h2 class="text-4xl font-sync font-bold mb-10 italic">SIGNUP</h2>
-                <input type="text" placeholder="DISPLAY NAME" class="auth-input">
-                <input type="email" placeholder="NEURAL MAIL" class="auth-input">
-                <input type="password" placeholder="SECURITY KEY" class="auth-input">
-                <button class="btn-neon w-full py-5 mt-4" onclick="navigate('home')">CREATE IDENTITY</button>
-                <p class="mt-6 text-[10px] text-gray-500 uppercase tracking-widest">Have ID? <span class="text-cyan-400 cursor-pointer" onclick="navigate('login')">Login</span></p>
-            </div>
-        </section>
-
-        <section id="home" class="page-view active">
-            <div class="hero-bg py-48 px-10 text-center">
-                <h2 class="text-8xl font-extrabold italic uppercase tracking-tighter mb-4">Master The <span class="text-cyan-400">Grid.</span></h2>
-                <p class="text-gray-400 font-sync text-[10px] tracking-[0.5em] mb-12 uppercase">Digital Architecture by Jhayone</p>
-                <div class="flex justify-center gap-6">
-                    <button onclick="navigate('explore')" class="btn-neon px-12">Enter Terminal</button>
-                    <button onclick="navigate('login')" class="border border-white/20 hover:border-cyan-400 px-12 py-3 rounded-xl font-sync text-[10px] uppercase transition">Login Access</button>
-                </div>
-            </div>
-
-            <div class="px-10 py-32 max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 border-b border-white/5">
-                <div>
-                    <p class="text-cyan-400 font-sync text-[10px] tracking-[0.4em] mb-4 uppercase">Protocol Mission</p>
-                    <h2 class="text-5xl font-extrabold italic uppercase mb-8">What is <span class="text-cyan-400">Hexa-Earn?</span></h2>
-                    <p class="text-gray-400 leading-relaxed mb-6">Hexa-Earn is a decentralized Architecture Protocol where users (Architects) secure nodes and optimize digital asset flow. Unlike traditional platforms, we utilize AI-driven processing to validate transactions on the Jhayone Network.</p>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-white mb-2 uppercase italic text-sm">Real Assets</h4>
-                            <p class="text-gray-500 text-xs">Every Strike # on the grid represents a localized data-packet worth real ETH value.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-white mb-2 uppercase italic text-sm">Secure Entry</h4>
-                            <p class="text-gray-500 text-xs">Architects must be verified via our Neural Link to prevent bot manipulation.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-panel p-10 bg-cyan-400/5">
-                    <h4 class="text-xs font-sync text-cyan-400 mb-8 uppercase tracking-widest">Revenue Model v8.6</h4>
-                    <ul class="space-y-6 text-sm font-mono">
-                        <li class="flex justify-between border-b border-white/5 pb-4">
-                            <span class="text-gray-400">Protocol Fees:</span>
-                            <span>2.5% per Yield</span>
-                        </li>
-                        <li class="flex justify-between border-b border-white/5 pb-4">
-                            <span class="text-gray-400">Node Maintenance:</span>
-                            <span>AI Optimized</span>
-                        </li>
-                        <li class="flex justify-between border-b border-white/5 pb-4">
-                            <span class="text-gray-400">Business Registry:</span>
-                            <span class="text-cyan-400">JH-9982-INTL</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="px-10 py-24 max-w-[1600px] mx-auto">
-                <div class="flex justify-between items-end mb-16">
-                    <div>
-                        <p class="text-cyan-400 font-sync text-[9px] tracking-[0.3em] mb-2 uppercase">Neural Selection</p>
-                        <h3 class="text-4xl font-bold uppercase italic">Active Terminals</h3>
-                    </div>
-                    <button onclick="navigate('explore')" class="text-xs font-bold border-b border-cyan-400 pb-1">VIEW ALL ASSETS</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10" id="homeGrid"></div>
-            </div>
-        </section>
-
-        <section id="explore" class="page-view px-10 py-24 max-w-[1600px] mx-auto">
-            <h2 class="text-6xl font-extrabold mb-20 uppercase italic tracking-tighter text-center">The <span class="text-cyan-400">Architecture</span> Grid</h2>
+        <section id="explore" class="page-view px-6 py-24 max-w-[1400px] mx-auto text-center">
+            <h2 class="text-5xl font-extrabold uppercase italic tracking-tighter mb-20">The <span class="text-cyan-400">Yield</span> Grid</h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" id="exploreGrid"></div>
         </section>
 
-        <section id="rankings" class="page-view px-10 py-24 max-w-5xl mx-auto">
-            <h2 class="text-5xl font-extrabold mb-12 uppercase italic">Leaderboard</h2>
-            <div class="glass-panel p-8">
-                <table class="w-full text-left" id="lbTable">
-                    <tr class="text-[10px] text-gray-500 font-sync border-b border-white/5"><th class="pb-4">NODE</th><th class="pb-4">ARCHITECT</th><th class="pb-4">YIELD</th></tr>
-                    <tr class="border-b border-white/5"><td class="py-6 font-mono text-cyan-400">#01</td><td class="font-bold">CYBER_PNK</td><td class="font-mono">45.20 ETH</td></tr>
-                </table>
-            </div>
-        </section>
-
-        <section id="profile" class="page-view px-10 py-24 max-w-5xl mx-auto text-center">
-            <div class="glass-panel p-16">
-                <img src="https://i.ibb.co/KPNmxD3/IMG-5015.jpg" class="w-40 h-40 rounded-full mx-auto mb-8 border-2 border-cyan-400 p-2">
-                <h3 class="text-4xl font-bold uppercase italic mb-2">Cyber_Architect</h3>
-                <p class="text-cyan-400 font-mono text-sm tracking-widest uppercase">Level 88 Security Clearance</p>
-            </div>
-        </section>
-
-        <section id="detail" class="page-view px-10 py-24 max-w-7xl mx-auto">
-            <button onclick="navigate('explore')" class="text-cyan-400 font-bold mb-12 uppercase tracking-widest text-xs">← Return to grid</button>
+        <section id="detail" class="page-view px-6 py-24 max-w-6xl mx-auto">
+            <button onclick="navigate('explore')" class="text-gray-500 hover:text-cyan-400 font-bold mb-10 uppercase tracking-widest text-[10px]">&larr; Return to Dashboard</button>
             <div id="detailView"></div>
         </section>
     </main>
 
-    <div id="chatWidget" class="glass-panel overflow-hidden">
-        <div class="p-5 flex justify-between bg-cyan-400/10 cursor-pointer" onclick="toggleChat()">
-            <span class="text-[10px] font-sync font-bold tracking-widest">NEURAL LINK</span>
-            <span id="chatIcon">▲</span>
+    <div id="chatWidget" class="fixed bottom-8 right-8 w-80 glass-panel overflow-hidden border-cyan-400/20 shadow-2xl">
+        <div class="p-4 flex justify-between bg-cyan-400/10 cursor-pointer items-center" onclick="toggleChat()">
+            <span class="text-[9px] font-sync font-bold tracking-widest uppercase text-cyan-400">System Terminal</span>
+            <span id="chatIcon" class="text-xs">▲</span>
         </div>
-        <div id="chatBody" class="chat-body">
-            <div class="flex-1 overflow-y-auto font-mono text-[10px] space-y-3 p-5" id="chatLines">
-                <div><span class="text-cyan-400">[SYSTEM]</span> Welcome to the Jhayone Network.</div>
+        <div id="chatBody" class="h-0 flex flex-col transition-all duration-500 ease-in-out overflow-hidden">
+            <div class="flex-1 h-64 overflow-y-auto font-mono text-[9px] space-y-2 p-4 bg-black/90" id="chatLines">
+                <div class="text-gray-600">[SYSTEM] Terminal initialized.</div>
             </div>
-            <div class="chat-input-bar">
-                <input type="text" id="chatMsg" class="chat-msg-input" placeholder="Enter message..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button class="text-cyan-400 text-[10px] font-bold" onclick="sendMessage()">SEND</button>
+            <div class="chat-input-container">
+                <input type="text" id="chatMsg" class="flex-1 bg-transparent border-none text-[10px] text-white outline-none font-mono" placeholder="Enter command..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="text-cyan-400 font-sync text-[8px] font-bold hover:text-white transition uppercase" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </div>
 
-    <div id="walletModal" class="hidden fixed inset-0 bg-black/90 z-[10000] items-center justify-center backdrop-blur-md">
-        <div class="glass-panel p-12 w-full max-w-md text-center">
-            <h2 class="text-2xl font-sync font-bold mb-10 italic">SYNC VAULT</h2>
-            <button class="w-full bg-white/5 p-5 rounded-2xl mb-4 border border-white/5 hover:border-cyan-400 transition" onclick="toggleWallet()">METAMASK</button>
-            <button class="w-full bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-cyan-400 transition" onclick="toggleWallet()">PHANTOM</button>
-        </div>
-    </div>
+    <div id="tooltip" class="tooltip"></div>
 
-    <footer class="mt-40 border-t border-white/5 py-24 px-10">
-        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-            <div class="flex items-center gap-8">
-                <img src="https://i.ibb.co/XfNVcCn2/IMG-5013.jpg" class="w-20 h-20 rounded-3xl grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
-                <div>
-                    <p class="text-cyan-400 font-sync text-[9px] mb-1 uppercase tracking-widest">Master Architect</p>
-                    <h3 class="text-3xl font-sync font-bold uppercase">Jhayone</h3>
-                    <p class="text-[8px] font-mono text-gray-500 mt-2 uppercase tracking-tighter">Verified Node Authority // REG NO. JH-9982-INTL</p>
-                </div>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] text-gray-500 font-mono uppercase">Version 8.6 // Neural Audio Link</p>
-                <p class="text-[10px] text-gray-700 font-sync mt-2 uppercase tracking-tighter">© 2026 Jhayone Digital Architects.</p>
-            </div>
-        </div>
-    </footer>
+    <footer>Created by JHAYONE TECH &copy; 2026</footer>
 
     <script>
-        const jhayoneGallery = ["https://i.ibb.co/5hqkHp9X/IMG-5020.jpg", "https://i.ibb.co/07mzk6v/IMG-5021.jpg", "https://i.ibb.co/Vc4XJvMg/IMG-5022.jpg", "https://i.ibb.co/DgKQ7tzv/IMG-5023.jpg", "https://i.ibb.co/0VhrJnt9/IMG-5024.jpg", "https://i.ibb.co/DydbFvD/IMG-5025.jpg", "https://i.ibb.co/My8JMBmc/IMG-5018.jpg", "https://i.ibb.co/gF4gy5qn/IMG-5019.jpg", "https://i.ibb.co/FL10GnpG/IMG-5026.jpg", "https://i.ibb.co/RXzncNb/IMG-5027.jpg", "https://i.ibb.co/vvXtWKJ1/IMG-5028.jpg", "https://i.ibb.co/C37SmRsc/IMG-5029.jpg", "https://i.ibb.co/wh6Zy3dp/IMG-5030.jpg", "https://i.ibb.co/sdfNwYss/IMG-5031.jpg", "https://i.ibb.co/Xk4wSyhm/IMG-5032.jpg", "https://i.ibb.co/Lztg2FGD/IMG-5033.jpg", "https://i.ibb.co/xSSYD7z5/IMG-5034.jpg", "https://i.ibb.co/sJczSTpL/IMG-5036.jpg", "https://i.ibb.co/tM1c62Tk/IMG-5037.jpg"];
-        const projects = [];
-        for(let i=1; i<=120; i++) { 
-            projects.push({ 
-                id: i, 
-                title: "Grid Strike #" + (100+i), 
-                img: jhayoneGallery[Math.floor(Math.random()*jhayoneGallery.length)], 
-                val: (Math.random() * 8.5).toFixed(2) + " ETH" 
-            }); 
-        }
-
-        const neuralAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
-        neuralAudio.volume = 0.3;
-
-        function playNeuralPing() {
-            neuralAudio.currentTime = 0;
-            neuralAudio.play().catch(e => console.log("Audio needs interaction first."));
-        }
-
-        function loadGrids() {
-            const hG = document.getElementById('homeGrid'); 
-            const eG = document.getElementById('exploreGrid');
-            hG.innerHTML = ''; eG.innerHTML = '';
-            projects.forEach((item, index) => {
-                const card = `
-                    <div class="game-card cursor-pointer group" onclick="openProject(${item.id})">
-                        <div class="game-img-wrapper mb-8 glass-panel border-white/10 group-hover:border-cyan-400/30 transition-all duration-500">
-                            <img src="${item.img}" class="game-img">
-                        </div>
-                        <h4 class="font-bold text-xl mb-3 uppercase italic tracking-tight group-hover:text-cyan-400 transition-colors">${item.title}</h4>
-                        <div class="flex justify-between items-center text-[10px] font-mono text-gray-500">
-                            <span class="bg-white/5 px-3 py-1 rounded-full border border-white/5">${item.val}</span>
-                            <span class="text-cyan-400 font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">Connect →</span>
-                        </div>
-                    </div>`;
-                if(index < 8) hG.innerHTML += card;
-                eG.innerHTML += card;
+        // DATA
+        const jhayoneGallery=["https://i.ibb.co/5hqkHp9X/IMG-5020.jpg","https://i.ibb.co/07mzk6v/IMG-5021.jpg","https://i.ibb.co/Vc4XJvMg/IMG-5022.jpg","https://i.ibb.co/DgKQ7tzv/IMG-5023.jpg","https://i.ibb.co/0VhrJnt9/IMG-5024.jpg","https://i.ibb.co/DydbFvD/IMG-5025.jpg","https://i.ibb.co/My8JMBmc/IMG-5018.jpg","https://i.ibb.co/gF4gy5qn/IMG-5019.jpg","https://i.ibb.co/FL10GnpG/IMG-5026.jpg","https://i.ibb.co/RXzncNb/IMG-5027.jpg","https://i.ibb.co/vvXtWKJ1/IMG-5028.jpg","https://i.ibb.co/C37SmRsc/IMG-5029.jpg","https://i.ibb.co/wh6Zy3dp/IMG-5030.jpg","https://i.ibb.co/sdfNwYss/IMG-5031.jpg","https://i.ibb.co/Xk4wSyhm/IMG-5032.jpg","https://i.ibb.co/Lztg2FGD/IMG-5033.jpg","https://i.ibb.co/xSSYD7z5/IMG-5034.jpg","https://i.ibb.co/sJczSTpL/IMG-5036.jpg","https://i.ibb.co/tM1c62Tk/IMG-5037.jpg"];
+        const projects=[];
+        for(let i=1;i<=60;i++){
+            projects.push({
+                id:i,
+                title:"Sector #"+(100+i),
+                img:jhayoneGallery[Math.floor(Math.random()*jhayoneGallery.length)],
+                val:(Math.random()*8.5).toFixed(2)+" ETH",
+                lastHourYield:(Math.random()*0.25).toFixed(3)+" ETH"
             });
         }
 
-        function navigate(id) { 
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active')); 
+        const tooltip=document.getElementById('tooltip');
+        const clickSound=document.getElementById('clickSound');
+        const notifySound=document.getElementById('notifySound');
+
+        function login(){
+            const username=document.getElementById('username').value.trim();
+            const password=document.getElementById('password').value.trim();
+            if(!username || !password) return alert("Enter both fields!");
+            document.getElementById('loginModal').style.display='none';
+            addLog(`[SYSTEM] Welcome, ${username}!`);
+        }
+
+        function loadGrids(){
+            const hG=document.getElementById('homeGrid'); 
+            const eG=document.getElementById('exploreGrid');
+            hG.innerHTML=''; eG.innerHTML='';
+            projects.forEach((item,index)=>{
+                const card=document.createElement('div');
+                card.className="game-card cursor-pointer group relative";
+                card.innerHTML=`
+                    <div class="mb-6 rounded-2xl overflow-hidden h-[280px] border border-white/5">
+                        <img src="${item.img}" class="node-img w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-bold text-lg mb-2 uppercase group-hover:text-cyan-400 transition-colors">${item.title}</h4>
+                    <div class="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                        <span class="bg-white/5 px-2 py-1 rounded border border-white/5">${item.val}</span>
+                        <span class="text-cyan-400 opacity-0 group-hover:opacity-100 transition-all">STAKE &rarr;</span>
+                    </div>
+                `;
+                card.addEventListener('mousemove', e=>{
+                    tooltip.style.opacity=1;
+                    tooltip.innerText="Last Hour Yield: "+item.lastHourYield;
+                    tooltip.style.top=(e.clientY+15)+"px";
+                    tooltip.style.left=(e.clientX+15)+"px";
+                });
+                card.addEventListener('mouseleave', ()=>{tooltip.style.opacity=0;});
+                card.addEventListener('click', ()=>{
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+                    openProject(item.id);
+                });
+                if(index<8) hG.appendChild(card);
+                eG.appendChild(card.cloneNode(true));
+            });
+        }
+
+        function simulateConnect(){
+            clickSound.currentTime = 0;
+            clickSound.play();
+            const btn=document.getElementById('walletBtn');
+            const target="0x71C8...D8A";
+            btn.innerText="";
+            let i=0;
+            const typing=setInterval(()=>{
+                btn.innerText+=target[i];
+                i++;
+                if(i>=target.length){
+                    clearInterval(typing);
+                    btn.className="border border-cyan-400 text-cyan-400 px-4 py-2 rounded-lg text-[10px] font-mono";
+                    addLog("[SYSTEM] Connection Verified.");
+                }
+            },50);
+        }
+
+        function sendMessage(){
+            const input=document.getElementById('chatMsg');
+            if(!input.value.trim()) return;
+            clickSound.currentTime = 0;
+            clickSound.play();
+            addLog(`<span class="text-white">[YOU]</span> ${input.value}`);
+            input.value="";
+            setTimeout(()=>addLog("[SYSTEM] Command acknowledged."),8000);
+        }
+
+        function addLog(msg){
+            const lines=document.getElementById('chatLines');
+            lines.innerHTML+=`<div>${msg}</div>`;
+            lines.scrollTop=lines.scrollHeight;
+            notifySound.currentTime=0;
+            notifySound.play();
+        }
+
+        function toggleChat(){ 
+            const body=document.getElementById('chatBody');
+            body.style.height=body.style.height==='300px'?'0px':'300px';
+            document.getElementById('chatIcon').innerText=body.style.height==='300px'?'▼':'▲';
+        }
+
+        function navigate(id){ 
+            document.querySelectorAll('.page-view').forEach(p=>p.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
             window.scrollTo(0,0); 
         }
 
-        function toggleWallet() { 
-            const m = document.getElementById('walletModal'); 
-            m.classList.toggle('hidden');
-            m.style.display = m.classList.contains('hidden') ? 'none' : 'flex';
-        }
-
-        function toggleChat() { 
-            document.getElementById('chatBody').classList.toggle('active'); 
-            document.getElementById('chatIcon').innerText = document.getElementById('chatBody').classList.contains('active') ? '▼' : '▲';
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chatMsg');
-            const lines = document.getElementById('chatLines');
-            if(input.value.trim() === "") return;
-            lines.innerHTML += `<div><span class="text-gray-500">[YOU]</span> ${input.value}</div>`;
-            input.value = "";
-            lines.scrollTop = lines.scrollHeight;
-            playNeuralPing();
-            setTimeout(() => {
-                lines.innerHTML += `<div><span class="text-cyan-400">[SYSTEM]</span> Broadcast successful.</div>`;
-                lines.scrollTop = lines.scrollHeight;
-                playNeuralPing();
-            }, 1000);
-        }
-
-        setInterval(() => {
-            const lines = document.getElementById('chatLines');
-            if(document.getElementById('chatBody').classList.contains('active')) {
-                const names = ["Void_X", "Neon_User", "Cyber_King", "Ghost_88", "Jhayone_Node"];
-                const name = names[Math.floor(Math.random()*names.length)];
-                const eth = (Math.random() * 0.5).toFixed(2);
-                lines.innerHTML += `<div><span class="text-cyan-400 font-bold">[WIN]</span> ${name} just earned ${eth} ETH!</div>`;
-                lines.scrollTop = lines.scrollHeight;
-                playNeuralPing();
-            }
-        }, 10000);
-
-        function openProject(id) {
-            const g = projects.find(p => p.id === id);
-            document.getElementById('detailView').innerHTML = `
-                <div class="grid lg:grid-cols-2 gap-20">
-                    <div class="game-img-wrapper h-[650px] shadow-2xl shadow-cyan-500/10">
-                        <img src="${g.img}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex flex-col justify-center">
-                        <p class="text-cyan-400 font-sync text-[10px] tracking-[0.4em] mb-4 uppercase">Protocol Active</p>
-                        <h2 class="text-7xl font-extrabold mb-10 italic uppercase tracking-tighter leading-none">${g.title}</h2>
-                        <div class="p-10 glass-panel mb-12">
-                            <span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Est. Network Yield</span>
-                            <div class="text-6xl font-bold text-cyan-400 mt-4">${g.val}</div>
+        function openProject(id){
+            clickSound.currentTime = 0;
+            clickSound.play();
+            const g=projects.find(p=>p.id===id);
+            document.getElementById('detailView').innerHTML=`
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <img src="${g.img}" class="rounded-3xl w-full h-[500px] object-cover border border-white/5 shadow-2xl">
+                    <div>
+                        <h2 class="text-6xl font-extrabold mb-8 italic uppercase text-cyan-400">${g.title}</h2>
+                        <div class="p-8 glass-panel mb-10 bg-cyan-400/5">
+                            <span class="text-xs text-gray-500 uppercase font-bold">Estimated Yield</span>
+                            <div class="text-5xl font-bold text-white mt-2 font-mono">${g.val}</div>
                         </div>
-                        <button class="btn-neon w-full py-8 text-xl font-sync">Initialize Terminal</button>
+                        <div class="glass-panel p-6 mb-10">
+                            <canvas id="yieldChart" class="w-full h-64"></canvas>
+                        </div>
+                        <button class="btn-neon w-full py-6 text-sm font-sync" onclick="simulateConnect()">Initialize Node</button>
                     </div>
                 </div>`;
             navigate('detail');
+            const ctx=document.getElementById('yieldChart').getContext('2d');
+            new Chart(ctx,{
+                type:'line',
+                data:{
+                    labels:Array.from({length:12},(_,i)=>`T-${12-i}h`),
+                    datasets:[{
+                        label:'ETH Yield',
+                        data:Array.from({length:12},()=> (Math.random()*1.2 + 0.5).toFixed(2)),
+                        borderColor:'#00f3ff',
+                        backgroundColor:'rgba(0,243,255,0.1)',
+                        tension:0.3,
+                        pointRadius:3,
+                        pointBackgroundColor:'#00f3ff'
+                    }]
+                },
+                options:{
+                    responsive:true,
+                    plugins:{legend:{display:false}},
+                    scales:{
+                        x:{ticks:{color:'#00f3ff'},grid:{color:'rgba(0,243,255,0.05)'}},
+                        y:{ticks:{color:'#00f3ff'},grid:{color:'rgba(0,243,255,0.05)'}}
+                    }
+                }
+            });
         }
 
-        window.onload = () => { loadGrids(); };
+        window.onload=()=>{loadGrids();};
     </script>
 </body>
 </html>
