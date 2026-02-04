@@ -84,10 +84,10 @@
 
     <div id="loginModal">
         <div class="modal-content">
-            <h2>Login</h2>
-            <input type="text" id="username" placeholder="Enter your username" />
-            <input type="password" id="password" placeholder="Enter password" />
-            <button onclick="login()">Login</button>
+            <h2 class="font-sync text-cyan-400 mb-4">Verification</h2>
+            <input type="text" id="username" placeholder="Architect ID" />
+            <input type="password" id="password" placeholder="Access Cipher" />
+            <button onclick="login()">Enter Grid</button>
         </div>
     </div>
 
@@ -102,6 +102,10 @@
             </div>
         </div>
         <div class="flex items-center gap-6">
+            <div class="text-right hidden md:block">
+                <p class="text-[8px] font-sync text-gray-500 uppercase">Architect XP</p>
+                <p id="xpCounter" class="text-xs font-mono text-cyan-400">0000</p>
+            </div>
             <button id="walletBtn" class="btn-neon" onclick="simulateConnect()">CONNECT WALLET</button>
         </div>
     </nav>
@@ -130,16 +134,12 @@
                     <div class="grid md:grid-cols-2 gap-12 text-left">
                         <div>
                             <h4 class="font-bold text-xl mb-4 italic uppercase">What is HEXA-EARN?</h4>
-                            <p class="text-gray-400 text-xs leading-relaxed">Hexa-Earn is a decentralized Architecture Protocol where users (Architects) secure nodes and optimize digital asset flow. Unlike traditional platforms, we utilize AI-driven processing to validate transactions on the Jhayone Network.</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Hexa-Earn is a decentralized Architecture Protocol where users (Architects) secure nodes and optimize digital asset flow.</p>
                         </div>
                         <div class="space-y-8">
                             <div>
                                 <h4 class="font-bold text-sm mb-2 uppercase text-cyan-400">Real Assets</h4>
-                                <p class="text-gray-400 text-xs">Every Strike # on the grid represents a localized data-packet worth real ETH value.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm mb-2 uppercase text-cyan-400">Secure Entry</h4>
-                                <p class="text-gray-400 text-xs">Architects must be verified via our Neural Link to prevent bot manipulation.</p>
+                                <p class="text-gray-400 text-xs">Every Sector # on the grid represents a localized data-packet worth real ETH value.</p>
                             </div>
                         </div>
                     </div>
@@ -187,9 +187,10 @@
     <footer>Created by JHAYONE TECH &copy; 2026</footer>
 
     <script>
-        // DATA
         const jhayoneGallery=["https://i.ibb.co/5hqkHp9X/IMG-5020.jpg","https://i.ibb.co/07mzk6v/IMG-5021.jpg","https://i.ibb.co/Vc4XJvMg/IMG-5022.jpg","https://i.ibb.co/DgKQ7tzv/IMG-5023.jpg","https://i.ibb.co/0VhrJnt9/IMG-5024.jpg","https://i.ibb.co/DydbFvD/IMG-5025.jpg","https://i.ibb.co/My8JMBmc/IMG-5018.jpg","https://i.ibb.co/gF4gy5qn/IMG-5019.jpg","https://i.ibb.co/FL10GnpG/IMG-5026.jpg","https://i.ibb.co/RXzncNb/IMG-5027.jpg","https://i.ibb.co/vvXtWKJ1/IMG-5028.jpg","https://i.ibb.co/C37SmRsc/IMG-5029.jpg","https://i.ibb.co/wh6Zy3dp/IMG-5030.jpg","https://i.ibb.co/sdfNwYss/IMG-5031.jpg","https://i.ibb.co/Xk4wSyhm/IMG-5032.jpg","https://i.ibb.co/Lztg2FGD/IMG-5033.jpg","https://i.ibb.co/xSSYD7z5/IMG-5034.jpg","https://i.ibb.co/sJczSTpL/IMG-5036.jpg","https://i.ibb.co/tM1c62Tk/IMG-5037.jpg"];
         const projects=[];
+        let userXP = 0;
+
         for(let i=1;i<=60;i++){
             projects.push({
                 id:i,
@@ -209,7 +210,35 @@
             const password=document.getElementById('password').value.trim();
             if(!username || !password) return alert("Enter both fields!");
             document.getElementById('loginModal').style.display='none';
-            addLog(`[SYSTEM] Welcome, ${username}!`);
+            addLog(`[SYSTEM] Architect ${username} verified and logged in.`);
+        }
+
+        function createCard(item) {
+            const card=document.createElement('div');
+            card.className="game-card cursor-pointer group relative";
+            card.innerHTML=`
+                <div class="mb-6 rounded-2xl overflow-hidden h-[280px] border border-white/5">
+                    <img src="${item.img}" class="node-img w-full h-full object-cover">
+                </div>
+                <h4 class="font-bold text-lg mb-2 uppercase group-hover:text-cyan-400 transition-colors">${item.title}</h4>
+                <div class="flex justify-between items-center text-[10px] font-mono text-gray-500">
+                    <span class="bg-white/5 px-2 py-1 rounded border border-white/5">${item.val}</span>
+                    <span class="text-cyan-400 opacity-0 group-hover:opacity-100 transition-all">STAKE &rarr;</span>
+                </div>
+            `;
+            card.addEventListener('mousemove', e=>{
+                tooltip.style.opacity=1;
+                tooltip.innerText="Last Hour Yield: "+item.lastHourYield;
+                tooltip.style.top=(e.clientY+15)+"px";
+                tooltip.style.left=(e.clientX+15)+"px";
+            });
+            card.addEventListener('mouseleave', ()=>{tooltip.style.opacity=0;});
+            card.addEventListener('click', ()=>{
+                clickSound.currentTime = 0;
+                clickSound.play();
+                openProject(item.id);
+            });
+            return card;
         }
 
         function loadGrids(){
@@ -217,32 +246,8 @@
             const eG=document.getElementById('exploreGrid');
             hG.innerHTML=''; eG.innerHTML='';
             projects.forEach((item,index)=>{
-                const card=document.createElement('div');
-                card.className="game-card cursor-pointer group relative";
-                card.innerHTML=`
-                    <div class="mb-6 rounded-2xl overflow-hidden h-[280px] border border-white/5">
-                        <img src="${item.img}" class="node-img w-full h-full object-cover">
-                    </div>
-                    <h4 class="font-bold text-lg mb-2 uppercase group-hover:text-cyan-400 transition-colors">${item.title}</h4>
-                    <div class="flex justify-between items-center text-[10px] font-mono text-gray-500">
-                        <span class="bg-white/5 px-2 py-1 rounded border border-white/5">${item.val}</span>
-                        <span class="text-cyan-400 opacity-0 group-hover:opacity-100 transition-all">STAKE &rarr;</span>
-                    </div>
-                `;
-                card.addEventListener('mousemove', e=>{
-                    tooltip.style.opacity=1;
-                    tooltip.innerText="Last Hour Yield: "+item.lastHourYield;
-                    tooltip.style.top=(e.clientY+15)+"px";
-                    tooltip.style.left=(e.clientX+15)+"px";
-                });
-                card.addEventListener('mouseleave', ()=>{tooltip.style.opacity=0;});
-                card.addEventListener('click', ()=>{
-                    clickSound.currentTime = 0;
-                    clickSound.play();
-                    openProject(item.id);
-                });
-                if(index<8) hG.appendChild(card);
-                eG.appendChild(card.cloneNode(true));
+                if(index<8) hG.appendChild(createCard(item));
+                eG.appendChild(createCard(item));
             });
         }
 
@@ -259,9 +264,18 @@
                 if(i>=target.length){
                     clearInterval(typing);
                     btn.className="border border-cyan-400 text-cyan-400 px-4 py-2 rounded-lg text-[10px] font-mono";
-                    addLog("[SYSTEM] Connection Verified.");
+                    addLog("[SYSTEM] Neural Wallet Connection Verified.");
                 }
             },50);
+        }
+
+        function triggerStake(title) {
+            clickSound.currentTime = 0;
+            clickSound.play();
+            userXP += Math.floor(Math.random() * 50) + 10;
+            document.getElementById('xpCounter').innerText = userXP.toString().padStart(4, '0');
+            addLog(`[STAKE] Successfully initialized Sector ${title}. +XP Earned.`);
+            alert("Stake Successful! Yield processing started.");
         }
 
         function sendMessage(){
@@ -271,7 +285,7 @@
             clickSound.play();
             addLog(`<span class="text-white">[YOU]</span> ${input.value}`);
             input.value="";
-            setTimeout(()=>addLog("[SYSTEM] Command acknowledged."), 8000);
+            setTimeout(()=>addLog("[SYSTEM] Command acknowledged by Protocol AI."), 2000);
         }
 
         function addLog(msg){
@@ -295,8 +309,6 @@
         }
 
         function openProject(id){
-            clickSound.currentTime = 0;
-            clickSound.play();
             const g=projects.find(p=>p.id===id);
             document.getElementById('detailView').innerHTML=`
                 <div class="grid lg:grid-cols-2 gap-16 items-center">
@@ -310,7 +322,7 @@
                         <div class="glass-panel p-6 mb-10">
                             <canvas id="yieldChart" class="w-full h-64"></canvas>
                         </div>
-                        <button class="btn-neon w-full py-6 text-sm font-sync" onclick="simulateConnect()">Initialize Node</button>
+                        <button class="btn-neon w-full py-6 text-sm font-sync" onclick="triggerStake('${g.title}')">Initialize Node & Stake</button>
                     </div>
                 </div>`;
             navigate('detail');
